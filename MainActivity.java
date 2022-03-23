@@ -3,6 +3,7 @@ package com.example.myapplication;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
@@ -39,8 +40,9 @@ public class MainActivity extends AppCompatActivity {
     public void onClick(View v) {
         String s;
         URL u;
+        Intent action;
 
-        s = "http://infort.gautero.fr/index2022.php?action=get&obj=but&id=1";//inputURL.getText().toString();
+        s = "http://infort.gautero.fr/index2022.php?action=get&obj=but";//inputURL.getText().toString();
 
         try {
             u = new URL(s);
@@ -62,8 +64,12 @@ public class MainActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        // On affiche le résultat
+        // On affiche le résultat sur une autre activité
         output.setText(s);
+
+        action = new Intent(this, MainActivity2.class) ;
+        action.putExtra("Val1",s);
+        this.startActivity(action) ;
     }
 
     public Future<String> lireURL(URL u) {
