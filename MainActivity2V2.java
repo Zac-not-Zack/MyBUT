@@ -38,36 +38,35 @@ public class MainActivity2 extends AppCompatActivity  {
 
         output=getIntent();
         affichage= output.getStringExtra("Table");
-        lf.add(new BUT(affichage));
         String s;
         s = output.getStringExtra("Val");
-        System.out.println(s);
         JSONArray jsonArray,sonArray;
+
+
+        lf= new ArrayList<>();
+        lf.add(new BUT(affichage));
+        vl= findViewById(R.id.listeFilms);
         try {
             jsonArray = new JSONArray(s);
             sonArray = new JSONArray();
-            for (int i = 0; i <= jsonArray.length(); i++) {
+            for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject json=  new JSONObject();
                 int id = jsonArray.getJSONObject(i).getInt("id");
                 String spec = jsonArray.getJSONObject(i).getString("specialite");
                 json.put("id" , id);
                 json.put("spec",spec);
-                lf.add(new BUT(json));
+                //sonArray.put(json);
+                //System.out.println(sonArray);
+                //System.out.println(json.get("spec"));
+                lf.add(new BUT(String.valueOf(json.getInt("id")) + "               " + json.get("spec")));
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        lf.add(new BUT(s));
-        //output2= findViewById(R.id.output2);
-        //output2.setText(affichage);
-        lf= new ArrayList<>();
-        vl= findViewById(R.id.listeFilms);
         aaf= new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, lf);
         vl.setAdapter(aaf);
        // vl.setOnItemClickListener(this);
         registerForContextMenu(vl);
-        //lf.add(new BUT(affichage));
         aaf.notifyDataSetChanged();
             //titreFilm.setText("");
     }
