@@ -78,8 +78,8 @@ public class MainActivity extends AppCompatActivity {
         }
         action =new Intent(this, MainActivity2.class);
     // On affiche le résultat sur une autre activité
-        r.append(" ID |  Spécialité     " + "\n");
-        r.append("----------------------------------------------------------------------------------" + "\n");
+        r.append(" ID     |        Spécialité     " + "\n");
+        r.append("-------------------------------------------------------------------------------------" + "\n");
         action.putExtra("Table",r.toString());
         action.putExtra("Val",s);
         this.startActivity(action);
