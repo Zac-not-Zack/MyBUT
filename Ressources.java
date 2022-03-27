@@ -34,15 +34,11 @@ public class Ressources extends AppCompatActivity {
         setContentView(R.layout.activity_ressources);
 
         output = getIntent();
-        //affichage = output.getStringExtra("Table");
         String s;
         s = output.getStringExtra("Val1");
         System.out.println(s);
         JSONArray jsonArray, sonArray;
-        //output2= findViewById(R.id.output2);
-        //output2.setText(affichage);
         lf = new ArrayList<>();
-        //lf.add(new BUT(affichage));
         vl = findViewById(R.id.listeUE);
 
         try {
@@ -61,26 +57,23 @@ public class Ressources extends AppCompatActivity {
                 String[] tp = tpratique.split(":");
                 tp[0] = tp[0] + " heures";
                 String desc = jsonArray.getJSONObject(i).getString("description");
-                if(desc == " "){
+                if(desc.isEmpty() == true ){
                     desc = "Pas de description";
                 }
                 System.out.println(desc);
                 tab.add("ID Res " + ": " + id + "\n" + "Nom " + ": " + nom + "\n"
                         + "Cours " + ": " + crs[0]  + "\n" + "TD " + ": " + td[0] + "\n"
-                        + "TP " + ": " + tp[0] + "\n" + "Description " + ":" + desc + "\n"  + "\n");
+                        + "TP " + ": " + tp[0] + "\n" + "Description " + ": " + desc + "\n"  + "\n");
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
         for(int j = 0; j<tab.size();j++){
-            /*h.append(tab.get(j));
-            h.append("\n");*/
             lf.add(new BUT(tab.get(j)));
         }
-        //vl.setText(h);
         aaf = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, lf);
         vl.setAdapter(aaf);
-        // vl.setOnItemClickListener(this);
+        //vl.setOnItemClickListener(this);
         registerForContextMenu(vl);
         aaf.notifyDataSetChanged();
         //titreFilm.setText("");
