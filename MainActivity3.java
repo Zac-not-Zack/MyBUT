@@ -120,14 +120,16 @@ public class MainActivity3 extends AppCompatActivity {
         String s;
         URL u;
         Intent action;
-        System.out.println(item.getTitle());
-        if (item.getTitle()=="Ressources") {//open activity ressources
-            s = "http://infort.gautero.fr/index2022.php?action=get&obj=res&idRes=2";
-            action = new Intent(this, Ressources.class);
-        }
-        else  {//open activity SAE
-            s = "http://infort.gautero.fr/index2022.php?action=get&obj=sae&idUe=3";
-            action = new Intent(this, SAE.class);}
+        System.out.println(info.position);
+        if(info.position==0) {
+            if (item.getTitle() == "Ressources") {//open activity ressources
+                s = "http://infort.gautero.fr/index2022.php?action=get&obj=res&idRes=2";
+                action = new Intent(this, Ressources.class);
+            } else {//open activity SAE
+                s = "http://infort.gautero.fr/index2022.php?action=get&obj=sae&idUe=3";
+                action = new Intent(this, SAE.class);
+            }
+
             try {
                 u = new URL(s);
             } catch (MalformedURLException e) {
@@ -152,6 +154,16 @@ public class MainActivity3 extends AppCompatActivity {
             this.startActivity(action);
             //lf.remove(info.position);
             aaf.notifyDataSetChanged();
+        }
+        else {
+            action = new Intent(this, Erreur.class);
+            s="Pas d'information";
+            action.putExtra("Val1", s);
+            this.startActivity(action);
+            //lf.remove(info.position);
+            aaf.notifyDataSetChanged();
+        }
+
 
 
         return true;
