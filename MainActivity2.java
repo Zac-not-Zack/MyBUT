@@ -55,6 +55,7 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
         affichage= output.getStringExtra("Table");
         String s,val;
         s = output.getStringExtra("Val1");
+        System.out.println(s);
         //vl= (EditText) findViewById(R.id.idText);
 
         JSONArray jsonArray,sonArray;
@@ -75,6 +76,7 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         aaf= new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, lf);
         vl.setAdapter(aaf);
         vl.setOnItemClickListener(this);
@@ -103,6 +105,7 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
         URL u;
         Intent action;
         StringBuilder r;
+
 
         if( i == 1) {
             r = new StringBuilder("");
@@ -135,9 +138,6 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
 
 
             action = new Intent(this, MainActivity3.class);
-            /*r.append(" ID     |        Spécialité     " + "\n");
-            r.append("-------------------------------------------------------------------------------------" + "\n");
-            action.putExtra("Table", r.toString());*/
             action.putExtra("Val1", s);
             this.startActivity(action);
 
