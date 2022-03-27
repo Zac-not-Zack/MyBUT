@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -43,6 +44,7 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
     private EditText output2;
     private ArrayList<BUT> lf;
     private ListView vl;
+    private TextView txt;
     private ArrayAdapter<BUT> aaf;
     private List<String> lol = new ArrayList<String>();
 
@@ -52,15 +54,19 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
         setContentView(R.layout.activity_main2);
 
         output=getIntent();
-        affichage= output.getStringExtra("Table");
+        //affichage= output.getStringExtra("Table");
         String s,val;
+        StringBuilder r;
+        r = new StringBuilder("");
         s = output.getStringExtra("Val1");
-        System.out.println(s);
-        //vl= (EditText) findViewById(R.id.idText);
+        r.append(" ID     |        Spécialité     " + "\n");
+        r.append("-------------------------------------------------------------------------------------" + "\n");
+        txt = (TextView)findViewById(R.id.textView3);
 
         JSONArray jsonArray,sonArray;
         lf= new ArrayList<>();
-        lf.add(new BUT(affichage));
+        //lf.add(new BUT(affichage));
+        txt.setText(r);
         vl= findViewById(R.id.listeBUT);
         try {
             jsonArray = new JSONArray(s);
