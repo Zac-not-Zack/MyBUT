@@ -43,6 +43,7 @@ public class MainActivity3 extends AppCompatActivity {
     private ListView vl;
     private ArrayAdapter<BUT> aaf;
     private ExecutorService exe;
+    private Future<String> todo;
     private List<String> tab = new ArrayList<String>();
 
     @Override
@@ -54,7 +55,6 @@ public class MainActivity3 extends AppCompatActivity {
         //affichage = output.getStringExtra("Table");
         String s;
         s = output.getStringExtra("Val1");
-        System.out.println(s);
         JSONArray jsonArray, sonArray;
         //output2= findViewById(R.id.output2);
         //output2.setText(affichage);
@@ -71,32 +71,17 @@ public class MainActivity3 extends AppCompatActivity {
                 int nb = jsonArray.getJSONObject(i).getInt("numero");
                 int idCom = jsonArray.getJSONObject(i).getInt("idCompetence");
                 String parcours = jsonArray.getJSONObject(i).getString("parcours");
-                /*json.put("id" , id);
-                json.put("semestre" , semestre);
-                json.put("nb" , nb);
-                json.put("idCom" , idCom);
-                json.put("parcours",parcours);*/
-
-                //System.out.println(json.getInt("id"));
-                //lf.add(new BUT(json.toString()));
+                if (parcours == "null"){
+                    parcours = "Tronc Commun";
+                }
                 tab.add("ID UE " + ": " + id + "\n" + "Semestre " + ": " + semestre + "\n"
                 + "Numéro " + ": " + nb + "\n" + "IdCompétence " + ": " + idCom + "\n"
                 + "Parcours " + ": " + parcours + "\n" + "\n");
-                /*tab.add("Semestre " + ": " + semestre + "\n");
-                tab.add("Numéro " + ": " + nb + "\n");
-                tab.add("IdCompétence " + ": " + idCom + "\n");
-                tab.add("Parcours " + ": " + parcours + "\n");*/
-                //tab.add("\n");
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        StringBuilder h;
-
-        h = new StringBuilder("");
         for(int j = 0; j<tab.size();j++){
-            /*h.append(tab.get(j));
-            h.append("\n");*/
             lf.add(new BUT(tab.get(j)));
         }
         //vl.setText(h);
@@ -114,14 +99,22 @@ public class MainActivity3 extends AppCompatActivity {
         contextMenu.add(Menu.NONE, view.getId(), 1, "Ressources");
         contextMenu.add(Menu.NONE, view.getId(), 2, "SAE");
     }
-}
-    /*public boolean onContextItemSelected(MenuItem item) {
+
+    public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         String s;
         URL u;
         Intent action;
-        s = "http://infort.gautero.fr/index2022.php?action=get&obj=ue&idBut=1";
-        if (info.position == 0) {//open activity ressources
+        System.out.println(info.position);
+        if(info.position==0) {
+            if (item.getTitle() == "Ressources") {//open activity ressources
+                s = "http://infort.gautero.fr/index2022.php?action=get&obj=res&idRes=2";
+                action = new Intent(this, Ressources.class);
+            } else {//open activity SAE
+                s = "http://infort.gautero.fr/index2022.php?action=get&obj=sae&idUe=3";
+                action = new Intent(this, SAE.class);
+            }
+
             try {
                 u = new URL(s);
             } catch (MalformedURLException e) {
@@ -129,13 +122,11 @@ public class MainActivity3 extends AppCompatActivity {
                 e.printStackTrace();
                 u = null;
             }
-
             // On crée l'objet qui va gérer la thread
             exe = Executors.newSingleThreadExecutor();
             // On lance la thread
-            todo = lireURL(u);
+            Future<String> todo = lireURL(u);
             // On attend le résultat
-
             try {
                 s = todo.get();
             } catch (ExecutionException e) {
@@ -144,23 +135,28 @@ public class MainActivity3 extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-
-            action = new Intent(this, Ressources.class);
             action.putExtra("Val1", s);
             this.startActivity(action);
-
             //lf.remove(info.position);
             aaf.notifyDataSetChanged();
         }
-        return true;
-    }*/
+        else {
+            action = new Intent(this, Erreur.class);
+            s="Pas d'information";
+            action.putExtra("Val1", s);
+            this.startActivity(action);
+            //lf.remove(info.position);
+            aaf.notifyDataSetChanged();
+        }
 
-    /*public Future<String> lireURL(URL u) {
+        return true;
+    }
+
+    public Future<String> lireURL(URL u) {
         return exe.submit(() -> {
             URLConnection c;
             String inputline;
             StringBuilder codeHTML = new StringBuilder("");
-
             try {
                 c = u.openConnection();
                 //temps maximun alloué pour se connecter
@@ -181,4 +177,5 @@ public class MainActivity3 extends AppCompatActivity {
             }
             return codeHTML.toString();
         });
-    }*/
+    }
+}
