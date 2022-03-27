@@ -31,17 +31,20 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.time.temporal.ValueRange;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity2 extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     private Intent output;
+    private ExecutorService exe;
+    private Future<String> todo;
     private String affichage;
     private EditText output2;
     private ArrayList<BUT> lf;
     private ListView vl;
     private ArrayAdapter<BUT> aaf;
-    private ExecutorService exe;
-    private Future<String> todo;
+    private List<String> lol = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +53,11 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
 
         output=getIntent();
         affichage= output.getStringExtra("Table");
-        String s;
+        String s,val;
         s = output.getStringExtra("Val1");
+        //vl= (EditText) findViewById(R.id.idText);
+
         JSONArray jsonArray,sonArray;
-        //output2= findViewById(R.id.output2);
-        //output2.setText(affichage);
         lf= new ArrayList<>();
         lf.add(new BUT(affichage));
         vl= findViewById(R.id.listeBUT);
@@ -67,9 +70,6 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
                 String spec = jsonArray.getJSONObject(i).getString("specialite");
                 json.put("id" , id);
                 json.put("spec",spec);
-                //sonArray.put(json);
-                //System.out.println(sonArray);
-                //System.out.println(json.get("spec"));
                 lf.add(new BUT(String.valueOf(json.getInt("id")) + "               " + json.get("spec")));
             }
         } catch (JSONException e) {
@@ -79,18 +79,30 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
         vl.setAdapter(aaf);
         vl.setOnItemClickListener(this);
         registerForContextMenu(vl);
-        aaf.notifyDataSetChanged();
+        //aaf.notifyDataSetChanged();
         //titreFilm.setText("");
     }
+    /*@Override
+    public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+        contextMenu.setHeaderTitle("Actions");
+        contextMenu.add(Menu.NONE, view.getId(), 1, "Supprimer");
+    }
 
-    //public boolean onContextItemSelected(MenuItem item) {
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        lf.remove(info.position);
+        aaf.notifyDataSetChanged();
+        return true;
+    }*/
+
+    @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-       // AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        // AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
-          String s;
-          URL u;
-          Intent action;
-          StringBuilder r;
+        String s;
+        URL u;
+        Intent action;
+        StringBuilder r;
 
         if( i == 1) {
             r = new StringBuilder("");
@@ -98,7 +110,7 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
             //String idBut;
             //String tmp = idBut;
 
-            s = "http://infort.gautero.fr/index2022.php?action=get&obj=but";//inputURL.getText().toString();
+            s = "http://infort.gautero.fr/index2022.php?action=get&obj=ue&idBut=1";//inputURL.getText().toString();
             //s = s + idBut
             try {
                 u = new URL(s);
@@ -123,9 +135,9 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
 
 
             action = new Intent(this, MainActivity3.class);
-            r.append(" ID     |        Spécialité     " + "\n");
+            /*r.append(" ID     |        Spécialité     " + "\n");
             r.append("-------------------------------------------------------------------------------------" + "\n");
-            action.putExtra("Table", r.toString());
+            action.putExtra("Table", r.toString());*/
             action.putExtra("Val1", s);
             this.startActivity(action);
 
@@ -133,15 +145,14 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
             aaf.notifyDataSetChanged();
             //return true;
         }
-            else{
-                s="Pas d'information";
-                action = new Intent(this, Erreur.class);
-                action.putExtra("Val1", s);
-                this.startActivity(action);
-            }
+        else{
+            s="Pas d'information";
+            action = new Intent(this, Erreur.class);
+            action.putExtra("Val1", s);
+            this.startActivity(action);
+        }
 
-      }
-
+    }
 
     public Future<String> lireURL(URL u) {
         return exe.submit(() -> {

@@ -3,7 +3,7 @@ package com.example.myapplication;
 public class BUT {//pk on doit avoir une classe
     private String titre;
 
-    public BUT () {
+    public BUT(StringBuilder h) {
         titre= "";
     }
 

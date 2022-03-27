@@ -8,6 +8,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,11 +20,14 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,12 +49,15 @@ public class MainActivity extends AppCompatActivity {
         String s;
         URL u;
         Intent action;
+        JSONObject jobj;
+        JSONArray jsonArray,sonArray;
+
         StringBuilder r;
 
         r = new StringBuilder("");
 
-        s = "http://infort.gautero.fr/index2022.php?action=get&obj=but";//inputURL.getText().toString();
-
+        s = "http://infort.gautero.fr/index2022.php?action=get&obj=but";
+        //s = "http://infort.gautero.fr/index2022.php?action=get&obj=ue&idBut=1";//inputURL.getText().toString();
         try {
             u = new URL(s);
         } catch (MalformedURLException e) {
@@ -54,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
             u = null;
         }
-
         // On crée l'objet qui va gérer la thread
         exe = Executors.newSingleThreadExecutor();
         // On lance la thread
@@ -67,8 +77,10 @@ public class MainActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        /*action =new Intent(this, MainActivity2.class);
         // On affiche le résultat sur une autre activité
-        //output.setText(s);
+        action.putExtra("Val",s);
+        this.startActivity(action);*/
 
         action = new Intent(this, MainActivity2.class) ;
         r.append(" ID     |        Spécialité     " + "\n");
@@ -76,6 +88,27 @@ public class MainActivity extends AppCompatActivity {
         action.putExtra("Table",r.toString());
         action.putExtra("Val1",s);
         this.startActivity(action) ;
+        /*try {
+            jsonArray = new JSONArray(s);
+            sonArray = new JSONArray();
+            for (int i = 0; i <= jsonArray.length(); i++) {
+                JSONObject json=  new JSONObject();
+                int id = jsonArray.getJSONObject(i).getInt("id");
+                String spec = jsonArray.getJSONObject(i).getString("specialite");
+                json.put("id" , id);
+                json.put("spec",spec);
+                sonArray.put(json);
+                action.putExtra("Val",sonArray.toString());
+                this.startActivity(action);
+                r.append(" " + id + "   |");
+                r.append("   " + spec + "\n");
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+
+        }*/
+
     }
 
     public Future<String> lireURL(URL u) {
