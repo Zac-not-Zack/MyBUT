@@ -43,6 +43,7 @@ public class MainActivity3 extends AppCompatActivity {
     private ListView vl;
     private ArrayAdapter<BUT> aaf;
     private ExecutorService exe;
+    private Future<String> todo;
     private List<String> tab = new ArrayList<String>();
 
     @Override
@@ -54,7 +55,6 @@ public class MainActivity3 extends AppCompatActivity {
         //affichage = output.getStringExtra("Table");
         String s;
         s = output.getStringExtra("Val1");
-        System.out.println(s);
         JSONArray jsonArray, sonArray;
         //output2= findViewById(R.id.output2);
         //output2.setText(affichage);
@@ -71,32 +71,17 @@ public class MainActivity3 extends AppCompatActivity {
                 int nb = jsonArray.getJSONObject(i).getInt("numero");
                 int idCom = jsonArray.getJSONObject(i).getInt("idCompetence");
                 String parcours = jsonArray.getJSONObject(i).getString("parcours");
-                /*json.put("id" , id);
-                json.put("semestre" , semestre);
-                json.put("nb" , nb);
-                json.put("idCom" , idCom);
-                json.put("parcours",parcours);*/
-
-                //System.out.println(json.getInt("id"));
-                //lf.add(new BUT(json.toString()));
+                if (parcours == "null"){
+                    parcours = "Tronc Commun";
+                }
                 tab.add("ID UE " + ": " + id + "\n" + "Semestre " + ": " + semestre + "\n"
-                        + "Numéro " + ": " + nb + "\n" + "IdCompétence " + ": " + idCom + "\n"
-                        + "Parcours " + ": " + parcours + "\n" + "\n");
-                /*tab.add("Semestre " + ": " + semestre + "\n");
-                tab.add("Numéro " + ": " + nb + "\n");
-                tab.add("IdCompétence " + ": " + idCom + "\n");
-                tab.add("Parcours " + ": " + parcours + "\n");*/
-                //tab.add("\n");
+                + "Numéro " + ": " + nb + "\n" + "IdCompétence " + ": " + idCom + "\n"
+                + "Parcours " + ": " + parcours + "\n" + "\n");
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        StringBuilder h;
-
-        h = new StringBuilder("");
         for(int j = 0; j<tab.size();j++){
-            /*h.append(tab.get(j));
-            h.append("\n");*/
             lf.add(new BUT(tab.get(j)));
         }
         //vl.setText(h);
@@ -163,8 +148,6 @@ public class MainActivity3 extends AppCompatActivity {
             //lf.remove(info.position);
             aaf.notifyDataSetChanged();
         }
-
-
 
         return true;
     }
