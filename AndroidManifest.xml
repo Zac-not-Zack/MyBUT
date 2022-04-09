@@ -13,6 +13,9 @@
         android:theme="@style/Theme.MyApplication"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".SAE"
+            android:exported="false" />
+        <activity
             android:name=".Ressources"
             android:exported="false" />
         <activity

@@ -8,6 +8,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,11 +20,14 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,33 +41,32 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //inputURL = (EditText) findViewById(R.id.urlInput);
-        //output = (EditText) findViewById(R.id.output);
     }
 
     public void onClick(View v) {
         String s;
         URL u;
         Intent action;
+        JSONObject jobj;
+        JSONArray jsonArray,sonArray;
+
         StringBuilder r;
 
         r = new StringBuilder("");
 
-        s = "http://infort.gautero.fr/index2022.php?action=get&obj=but";//inputURL.getText().toString();
+        s = "http://infort.gautero.fr/index2022.php?action=get&obj=but";
 
         try {
             u = new URL(s);
         } catch (MalformedURLException e) {
-            // Ce n'est qu'un exemple, pas de traitement propre de l'exception
+
             e.printStackTrace();
             u = null;
         }
-
-        // On crée l'objet qui va gérer la thread
         exe = Executors.newSingleThreadExecutor();
-        // On lance la thread
+
         todo = lireURL(u);
-        // On attend le résultat
+
         try {
             s = todo.get();
         } catch (ExecutionException e) {
@@ -67,18 +74,16 @@ public class MainActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        // On affiche le résultat sur une autre activité
-        //output.setText(s);
 
         action = new Intent(this, MainActivity2.class) ;
-        r.append(" ID     |        Spécialité     " + "\n");
-        r.append("-------------------------------------------------------------------------------------" + "\n");
-        action.putExtra("Table",r.toString());
+
         action.putExtra("Val1",s);
         this.startActivity(action) ;
+
+
     }
 
-    public Future<String> lireURL(URL u) {
+    public Future<String> lireURL(URL u) {//cx réseaux
         return exe.submit(() -> {
             URLConnection c;
             String inputline;
@@ -86,18 +91,18 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 c = u.openConnection();
-                //temps maximun alloué pour se connecter
+
                 c.setConnectTimeout(60000);
-                //temps maximun alloué pour lire
+
                 c.setReadTimeout(60000);
-                //flux de lecture avec l'encodage des caractères UTF-8
+
                 BufferedReader in = new BufferedReader(
                         new InputStreamReader(c.getInputStream(), "UTF-8"));
                 while ((inputline = in.readLine()) != null) {
-                    //concaténation+retour à la ligne avec \n
+
                     codeHTML.append(inputline + "\n");
                 }
-                //il faut bien fermer le flux de lecture
+
                 in.close();
             } catch (IOException e) {
                 e.printStackTrace();
