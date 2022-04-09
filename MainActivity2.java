@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -31,17 +32,21 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.time.temporal.ValueRange;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity2 extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     private Intent output;
+    private ExecutorService exe;
+    private Future<String> todo;
     private String affichage;
     private EditText output2;
     private ArrayList<BUT> lf;
     private ListView vl;
+    private TextView txt;
     private ArrayAdapter<BUT> aaf;
-    private ExecutorService exe;
-    private Future<String> todo;
+    private List<String> lol = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,16 +54,19 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
         setContentView(R.layout.activity_main2);
 
         output=getIntent();
-        affichage= output.getStringExtra("Table");
-        String s;
+        String s,val;
+        StringBuilder r;
+        r = new StringBuilder("");
         s = output.getStringExtra("Val1");
+        r.append(" ID     |        Spécialité     " + "\n");
+        r.append("-------------------------------------------------------------------------------------" + "\n");
+        txt = (TextView)findViewById(R.id.textView3);
+
         JSONArray jsonArray,sonArray;
-        //output2= findViewById(R.id.output2);
-        //output2.setText(affichage);
         lf= new ArrayList<>();
-        lf.add(new BUT(affichage));
+        txt.setText(r);
         vl= findViewById(R.id.listeBUT);
-        try {
+        try {//découpage objetJSON - listeBUT
             jsonArray = new JSONArray(s);
             sonArray = new JSONArray();
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -67,52 +75,45 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
                 String spec = jsonArray.getJSONObject(i).getString("specialite");
                 json.put("id" , id);
                 json.put("spec",spec);
-                //sonArray.put(json);
-                //System.out.println(sonArray);
-                //System.out.println(json.get("spec"));
                 lf.add(new BUT(String.valueOf(json.getInt("id")) + "               " + json.get("spec")));
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         aaf= new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, lf);
         vl.setAdapter(aaf);
         vl.setOnItemClickListener(this);
         registerForContextMenu(vl);
-        aaf.notifyDataSetChanged();
-        //titreFilm.setText("");
+
     }
 
-    //public boolean onContextItemSelected(MenuItem item) {
+
+    @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-       // AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
-          String s;
-          URL u;
-          Intent action;
-          StringBuilder r;
+        String s, t;
+        URL u;
+        Intent action;
 
-        if( i == 1) {
-            r = new StringBuilder("");
-            //Automatisation de choix utilisateur
-            //String idBut;
-            //String tmp = idBut;
+        if( i == 0) {//récupération des infos sur UEs et envoyer à MainActivity3
+            t = "Les Unités d'Enseignement (UE) de ";
 
-            s = "http://infort.gautero.fr/index2022.php?action=get&obj=but";//inputURL.getText().toString();
-            //s = s + idBut
+            t = t + "R&T";
+            s = "http://infort.gautero.fr/index2022.php?action=get&obj=ue&idBut=1";
             try {
                 u = new URL(s);
             } catch (MalformedURLException e) {
-                // Ce n'est qu'un exemple, pas de traitement propre de l'exception
+
                 e.printStackTrace();
                 u = null;
             }
 
-            // On crée l'objet qui va gérer la thread
+
             exe = Executors.newSingleThreadExecutor();
-            // On lance la thread
+
             todo = lireURL(u);
-            // On attend le résultat
+
             try {
                 s = todo.get();
             } catch (ExecutionException e) {
@@ -123,25 +124,22 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
 
 
             action = new Intent(this, MainActivity3.class);
-            r.append(" ID     |        Spécialité     " + "\n");
-            r.append("-------------------------------------------------------------------------------------" + "\n");
-            action.putExtra("Table", r.toString());
             action.putExtra("Val1", s);
+            action.putExtra("Val2", t);
             this.startActivity(action);
 
-            //lf.remove(info.position);
+
             aaf.notifyDataSetChanged();
-            //return true;
+
         }
-            else{
-                s="Pas d'information";
-                action = new Intent(this, Erreur.class);
-                action.putExtra("Val1", s);
-                this.startActivity(action);
-            }
+        else{//gestion de cas information indisponible
+            s="Pas d'information";
+            action = new Intent(this, Erreur.class);
+            action.putExtra("Val1", s);
+            this.startActivity(action);
+        }
 
-      }
-
+    }
 
     public Future<String> lireURL(URL u) {
         return exe.submit(() -> {
@@ -151,18 +149,18 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
 
             try {
                 c = u.openConnection();
-                //temps maximun alloué pour se connecter
+
                 c.setConnectTimeout(60000);
-                //temps maximun alloué pour lire
+
                 c.setReadTimeout(60000);
-                //flux de lecture avec l'encodage des caractères UTF-8
+
                 BufferedReader in = new BufferedReader(
                         new InputStreamReader(c.getInputStream(), "UTF-8"));
                 while ((inputline = in.readLine()) != null) {
-                    //concaténation+retour à la ligne avec \n
+
                     codeHTML.append(inputline + "\n");
                 }
-                //il faut bien fermer le flux de lecture
+
                 in.close();
             } catch (IOException e) {
                 e.printStackTrace();

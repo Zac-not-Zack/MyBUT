@@ -1,6 +1,6 @@
 package com.example.myapplication;
 
-public class BUT {//pk on doit avoir une classe
+public class BUT {
     private String titre;
 
     public BUT () {
@@ -23,3 +23,4 @@ public class BUT {//pk on doit avoir une classe
         return titre;
     }
 }
+

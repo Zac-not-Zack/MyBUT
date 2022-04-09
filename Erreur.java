@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.content.Intent;
+import android.view.View;
 import android.widget.EditText;
 
 public class Erreur extends AppCompatActivity {
@@ -22,4 +23,10 @@ public class Erreur extends AppCompatActivity {
         output4= findViewById(R.id.output4);
         output4.setText(affichage);
     }
+    public void onClick(View v) {
+        Intent action;
+        action = new Intent(this, MainActivity.class);
+        this.startActivity(action);
+    }
+
 }

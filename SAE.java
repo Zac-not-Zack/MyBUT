@@ -13,14 +13,10 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,111 +25,90 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class MainActivity3 extends AppCompatActivity {
-
+public class SAE extends AppCompatActivity implements AdapterView.OnItemClickListener {
     private Intent output;
+    private Future<String> todo;
     private String affichage;
-    private EditText output3;
+    private EditText outputSae;
     private ArrayList<BUT> lf;
     private ListView vl;
-    private ArrayAdapter<BUT> aaf;
     private ExecutorService exe;
+    private ArrayAdapter<BUT> aaf;
     private List<String> tab = new ArrayList<String>();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main3);
+        setContentView(R.layout.activity_sae);
 
         output = getIntent();
-
-        Intent action;
         String s;
-        String t;
-        t = output.getStringExtra("Val2");
         s = output.getStringExtra("Val1");
-        System.out.println(s);
         JSONArray jsonArray, sonArray;
-        output3= findViewById(R.id.output3);
-        output3.setText(t);
         lf = new ArrayList<>();
-
-        vl = findViewById(R.id.listeUE);
-        try {//découpage objet JSON récupéré de MainActivity2
+        vl = findViewById(R.id.listeSAE);
+        try {//découpage objet JSON contenant les infos sur les ressources d'un SAE - récupéré de MainActivity3
             jsonArray = new JSONArray(s);
-            sonArray = new JSONArray();
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject json=  new JSONObject();
                 int id = jsonArray.getJSONObject(i).getInt("id");
-                int semestre = jsonArray.getJSONObject(i).getInt("semestre");
-                int nb = jsonArray.getJSONObject(i).getInt("numero");
-                String idCom = jsonArray.getJSONObject(i).getString("idCompetence");
-                String parcours = jsonArray.getJSONObject(i).getString("parcours");
+                String nom = jsonArray.getJSONObject(i).getString("nom");
+                String cours = jsonArray.getJSONObject(i).getString("cours");
+                String [] crs = cours.split(":");
+                crs[0] = crs[0] + " heures";
+                String tdirige = jsonArray.getJSONObject(i).getString("td");
+                String[] td = tdirige.split(":");
+                td[0] = td[0] + " heures";
+                String tpratique = jsonArray.getJSONObject(i).getString("tp");
+                String[] tp = tpratique.split(":");
+                tp[0] = tp[0] + " heures";
+                String projet = jsonArray.getJSONObject(i).getString("projet");
+                String[] pr = projet.split(":");
+                pr[0] = pr[0] + " heures";
 
-                //traitement de cas particulier
-                if (parcours == "null"){
-                    parcours = "Tronc Commun";
-                }
-                if (idCom=="0"){
-                    idCom = "Aucune information associée";
-
-                }
-
-                tab.add("\n" + "ID UE " + ": " + id + "\n" + "Semestre " + ": " + semestre + "\n"
-                        + "Numéro dans le semestre " + ": " + nb + "\n" + "Id Compétence " + ": " + idCom + "\n"
-                        + "Parcours " + ": " + parcours + "\n" );
-
+                tab.add("ID SAE " + ": " + id + "\n" + "Nom " + ": " + nom + "\n"
+                        + "Cours " + ": " + crs[0]  + "\n" + "TD " + ": " + td[0] + "\n"
+                        + "TP " + ": " + tp[0] + "\n" + "Projet " + ": " + pr[0] + "\n"  + "\n");
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        StringBuilder h;
-
-        h = new StringBuilder("");
         for(int j = 0; j<tab.size();j++){
-
             lf.add(new BUT(tab.get(j)));
         }
 
+        output = getIntent();
+        affichage = output.getStringExtra("IdUE");
+        outputSae= findViewById(R.id.outputSae);
+        affichage = "Les SAE d'UE "+ affichage;
+        outputSae.setText(affichage);
         aaf = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, lf);
         vl.setAdapter(aaf);
+        vl.setOnItemClickListener(this);
         registerForContextMenu(vl);
         aaf.notifyDataSetChanged();
 
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
-        contextMenu.setHeaderTitle("Actions");
-        contextMenu.add(Menu.NONE, view.getId(), 1, "Ressources");
-        contextMenu.add(Menu.NONE, view.getId(), 2, "SAE");
-    }
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {//affichage info plus détaillée d'un SAE
 
-    public boolean onContextItemSelected(MenuItem item) {//gestion de MenuContextual
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         String s;
-        int idUE;
         URL u;
         Intent action;
-        System.out.println(info.position);
-        if(info.position==0) {//selon position de clique et hold, l'utilisateur va être redirigé vers différente activité
-            if (item.getTitle() == "Ressources") {//open activity ressources
-                s = "http://infort.gautero.fr/index2022.php?action=get&obj=res&idRes=2";
-                action = new Intent(this, Ressources.class);
-                String v = "3";
-                action.putExtra("IdUE", v);
-            } else {//open activity SAE
-                s = "http://infort.gautero.fr/index2022.php?action=get&obj=sae&idUe=3";
-                action = new Intent(this, SAE.class);
-                String v = "3";
-                action.putExtra("IdUE", v);
+        if(i==0) {//Récupération de différentes infos selon où l'utilisateur clique
+            s = "http://infort.gautero.fr/index2022.php?action=get&obj=sae&idSae=2";
+            }
+        else {
+            s = "http://infort.gautero.fr/index2022.php?action=get&obj=sae&idSae=3";
             }
 
+             action = new Intent(this, MainActivity4.class);
             try {
                 u = new URL(s);
             } catch (MalformedURLException e) {
@@ -153,26 +128,14 @@ public class MainActivity3 extends AppCompatActivity {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-            action.putExtra("Val1", s);
-
-            this.startActivity(action);
-
-            aaf.notifyDataSetChanged();
-        }
-        else {//gestion de cas information indisponible
-            action = new Intent(this, Erreur.class);
-            s="Pas d'information";
+            System.out.println(s);
             action.putExtra("Val1", s);
             this.startActivity(action);
 
             aaf.notifyDataSetChanged();
-        }
 
-
-
-        return true;
     }
+
 
     public Future<String> lireURL(URL u) {
         return exe.submit(() -> {
